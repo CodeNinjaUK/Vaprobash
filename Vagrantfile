@@ -40,6 +40,8 @@ Vagrant.configure("2") do |config|
   config.vm.box = "precise64"
 
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  # If using VMWare Fusion Provider:
+  # config.vm.box_url = "http://files.vagrantup.com/precise64_vmware.box"
 
   # Create a hostname, don't forget to put it to the `hosts` file
   config.vm.hostname = server_name
@@ -58,6 +60,18 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |vb|
 
     vb.customize ["modifyvm", :id, "--memory", "384"]
+
+    # Set the timesync threshold to 10 seconds, instead of the default 20 minutes.
+    # If the clock gets more than 15 minutes out of sync (due to your laptop going
+    # to sleep for instance, then some 3rd party services will reject requests.
+    vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+
+  end
+  
+  # If using VMWare Fusion
+  config.vm.provider :vmware_fusion do |vb|
+
+    vb.vmx["memsize"] = "384"
 
   end
 
