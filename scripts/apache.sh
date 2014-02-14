@@ -47,8 +47,6 @@ fi
 echo ">>> Apache document root set to $document_root"
 
 # Set server alias
-server_aliases="*"
-
 if [ "$4" ]; then
     # This gets all arguments passed in from the 4th onwards
     server_aliases=${@:4}
