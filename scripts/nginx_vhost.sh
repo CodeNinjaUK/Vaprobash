@@ -21,6 +21,7 @@ Assumes /etc/nginx/sites-available and /etc/nginx/sites-enabled setup used
     -d    DocumentRoot - i.e. /var/www/yoursite
     -h    Help - Show this menu.
     -s    ServerName - i.e. example.com or sub.example.com
+    -a    ServerAliases - i.e. "www.example.com othersub.example.com". Default: *
     
 _EOF_
 exit 1
@@ -38,7 +39,7 @@ server {
     index index.html index.htm index.php;
 
     # Make site accessible from http://set-ip-address.xip.io
-    server_name $ServerName;
+    server_name $ServerName $ServerAlias;
 
     access_log /var/log/nginx/$ServerName-access.log;
     error_log  /var/log/nginx/$ServerName-error.log error;
@@ -72,13 +73,8 @@ server {
 _EOF_
 }
 
-#Sanity Check - are there two arguments with 2 values?
-if [ $# -ne 4 ]; then
-	show_usage
-fi
-
 #Parse flags
-while getopts "hd:s:" OPTION; do
+while getopts "d:s:a:" OPTION; do
     case $OPTION in
         h)
             show_usage
@@ -89,11 +85,20 @@ while getopts "hd:s:" OPTION; do
         s)
             ServerName=$OPTARG
             ;;
+        a)
+            ServerAlias=$OPTARG
+            ;;
         *)
             show_usage
             ;;
     esac
 done
+
+#Check for required fields.
+if [[ -z $DocumentRoot ]] || [[ -z $ServerName ]]; then
+    echo ">>> ERROR: Document Root (-d) and Server Name (-s) are required"
+	show_usage
+fi
 
 if [ ! -d $DocumentRoot ]; then 
     mkdir -p $DocumentRoot

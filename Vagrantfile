@@ -8,24 +8,27 @@ github_branch   = "master"
 
 # Some variables
 server_ip             = "192.168.33.10"
-mysql_root_password   = "root"   # We'll assume user "root"
-mysql_version         = "5.5"    # Options: 5.5 | 5.6
-pgsql_root_password   = "root"   # We'll assume user "root"
-mariadb_version       = "10.0"   # Options: 5.5 | 10.0
-mariadb_root_password = "root"   # We'll assume user "root"
-ruby_version          = "latest" # Choose what ruby version should be installed (will also be the default version)
-ruby_gems             = [        # List any Ruby Gems that you want to install
+server_name           = "vaprobash.dev"
+server_document_root  = "/vagrant"  # Document root for your web server.
+server_aliases        = ""          # Alternative hostnames to respond to. i.e. "local.dev app.dev"
+mysql_root_password   = "root"      # We'll assume user "root"
+mysql_version         = "5.5"       # Options: 5.5 | 5.6
+pgsql_root_password   = "root"      # We'll assume user "root"
+mariadb_version       = "10.0"      # Options: 5.5 | 10.0
+mariadb_root_password = "root"      # We'll assume user "root"
+ruby_version          = "latest"    # Choose what ruby version should be installed (will also be the default version)
+ruby_gems             = [           # List any Ruby Gems that you want to install
   #"jekyll",
   #"sass",
   #"compass",
 ]
-php_version           = "latest" # Options: latest|previous|distributed   For 12.04. latest=5.5, previous=5.4, distributed=5.3
-composer_packages     = [        # List any global Composer packages that you want to install
+php_version           = "latest"    # Options: latest|previous|distributed   For 12.04. latest=5.5, previous=5.4, distributed=5.3
+composer_packages     = [           # List any global Composer packages that you want to install
   #"phpunit/phpunit:3.7.*",
   #"codeception/codeception=*",
 ]
-nodejs_version        = "latest" # By default "latest" will equal the latest stable version
-nodejs_packages       = [        # List any global NodeJS packages that you want to install
+nodejs_version        = "latest"    # By default "latest" will equal the latest stable version
+nodejs_packages       = [           # List any global NodeJS packages that you want to install
   #"grunt-cli",
   #"bower",
   #"yo",
@@ -39,7 +42,7 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   # Create a hostname, don't forget to put it to the `hosts` file
-  config.vm.hostname = "vaprobash.dev"
+  config.vm.hostname = server_name
 
   # Create a static IP
   config.vm.network :private_network, ip: server_ip
@@ -74,19 +77,21 @@ Vagrant.configure("2") do |config|
   # Provision Vim
   # config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/vim.sh"
 
+  # Export git details to the VM so provision scripts can use to them fetch extra resources.
+  config.vm.provision "shell", upload_path: "/tmp/vaprobash_exports.sh", inline: "VAPROBASH_GIT_USER=#{github_username}; VAPROBASH_GIT_REPO=#{github_repo}; VAPROBASH_GIT_BRANCH=#{github_branch}"
 
   ####
   # Web Servers
   ##########
 
   # Provision Apache Base
-  # config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/apache.sh", args: server_ip
+  # config.vm.provision "shell", path: "~/Dropbox/projects/CodeNinja/Vaprobash/scripts/apache.sh", args: [server_ip, server_name, server_document_root, server_aliases]
 
   # Provision HHVM
   # config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/hhvm.sh"
 
   # Provision Nginx Base
-  # config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/nginx.sh", args: server_ip
+  # config.vm.provision "shell", path: "~/Dropbox/projects/CodeNinja/Vaprobash/scripts/nginx.sh", args: [server_ip, server_name, server_document_root, server_aliases]
 
 
   ####
