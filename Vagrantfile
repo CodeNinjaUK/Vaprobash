@@ -65,6 +65,9 @@ Vagrant.configure("2") do |config|
   # Base Items
   ##########
 
+  # Export git details to the VM so provision scripts can use to them fetch extra resources.
+  config.vm.provision "shell", upload_path: "/tmp/vaprobash_exports.sh", inline: "VAPROBASH_GIT_USER=#{github_username}; VAPROBASH_GIT_REPO=#{github_repo}; VAPROBASH_GIT_BRANCH=#{github_branch}"
+
   # Provision Base Packages
   config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/base.sh"
 
@@ -76,9 +79,6 @@ Vagrant.configure("2") do |config|
 
   # Provision Vim
   # config.vm.provision "shell", path: "https://raw.github.com/#{github_username}/#{github_repo}/#{github_branch}/scripts/vim.sh"
-
-  # Export git details to the VM so provision scripts can use to them fetch extra resources.
-  config.vm.provision "shell", upload_path: "/tmp/vaprobash_exports.sh", inline: "VAPROBASH_GIT_USER=#{github_username}; VAPROBASH_GIT_REPO=#{github_repo}; VAPROBASH_GIT_BRANCH=#{github_branch}"
 
   ####
   # Web Servers
